@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER//FLIX - Blue AI Cyberpunk Movie Explorer</title>
+  
+  <!-- Cyberpunk Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/cyber-theme.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- Dynamic Canvas for Cyber Matrix & Neural Particles -->
+  <canvas id="cyber-canvas"></canvas>
+
+  <!-- CRT Scanline Screen Overlay -->
+  <div class="scanline-overlay"></div>
+
+  <!-- Animated Scanner Laser -->
+  <div class="scan-bar-animated"></div>
+
+  <!-- Main Cyber App Shell -->
+  <div class="cyber-app-wrapper">
+
+    <!-- 1. TOP TELEMETRY STATUS BAR -->
+    <header class="telemetry-bar">
+      <div class="telemetry-left">
+        <div class="telemetry-item">
+          <span class="status-indicator"></span>
+          <span>AI SYNC: 99.8%</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="mono-tag text-cyan">LOCAL:</span>
+          <span id="telemetry-clock-local">00:00:00</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="mono-tag text-dim">UTC:</span>
+          <span id="telemetry-clock-utc" class="text-dim">00:00:00 UTC</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="mono-tag text-blue">[IMAGE-FREE SYSTEM: 100% VECTOR]</span>
+        </div>
+      </div>
+
+      <div class="telemetry-right">
+        <button id="btn-audio-toggle" class="telemetry-btn" title="Toggle UI Audio Synth">
+          <span id="audio-toggle-icon">🔊</span>
+          <span>AUDIO SYNTH</span>
+        </button>
+
+        <button id="btn-export-data" class="telemetry-btn" title="Export neural memory JSON">
+          <span>💾</span>
+          <span>EXPORT DATA</span>
+        </button>
+
+        <div class="telemetry-item">
+          <span class="mono-tag">FAVORITES:</span>
+          <span id="fav-top-count" class="fav-counter-badge">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. CYBER HERO & STATS HEADER -->
+    <section class="cyber-header">
+      <h1 class="header-glitch-title glitch-text">
+        <span class="title-symbol">⟨◈⟩</span>
+        CYBER//FLIX
+        <span class="title-symbol">⟨◈⟩</span>
+      </h1>
+      <p class="header-subtitle">NEURAL ENTERTAINMENT ARCHIVE // AI EXPLORER PROTOCOL v4.2</p>
+
+      <!-- Stat Deck Cards -->
+      <div class="cyber-stat-deck">
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">🎬</div>
+          <div>
+            <div class="stat-label">TOTAL DATA-STREAMS</div>
+            <div class="stat-value" id="stat-total-movies">24</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">🧬</div>
+          <div>
+            <div class="stat-label">GENRE TAXONOMIES</div>
+            <div class="stat-value" id="stat-total-genres">10</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">💙</div>
+          <div>
+            <div class="stat-label">SAVED IN NEURAL MEMORY</div>
+            <div class="stat-value" id="stat-total-favs">0</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">⚡</div>
+          <div>
+            <div class="stat-label">NEURAL ENGINE</div>
+            <div class="stat-value text-cyan">ONLINE</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CONTROL & SEARCH DECK -->
+    <section class="control-deck">
+      <!-- Search Bar -->
+      <div class="search-container">
+        <span class="search-icon-symbol">🔍</span>
+        <input 
+          type="text" 
+          id="cyber-search-input" 
+          class="cyber-search-input" 
+          placeholder="SEARCH TITLE, CAST, CYBER-CLASSIFICATION, OR DIRECTORS..."
+          autocomplete="off"
+        >
+        <button id="search-clear-btn" class="search-clear-btn" title="Clear Search">✖</button>
+      </div>
+
+      <!-- Genre Matrix Filter Chips -->
+      <div class="genre-matrix-wrapper">
+        <div class="section-mono-title">
+          <span>// SELECT GENRE PROTOCOL:</span>
+        </div>
+        <div id="genre-chips-container" class="genre-chips-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Advanced Filter Row -->
+      <div class="filter-actions-grid">
+        <!-- Min Rating Slider -->
+        <div class="filter-group">
+          <div class="filter-label">
+            <span>MIN CYBER-RATING:</span>
+            <span id="rating-slider-value" class="text-cyan">0.0+</span>
+          </div>
+          <input 
+            type="range" 
+            id="cyber-rating-slider" 
+            class="cyber-range" 
+            min="0" 
+            max="9.5" 
+            step="0.5" 
+            value="0"
+          >
+        </div>
+
+        <!-- Sort Selector -->
+        <div class="filter-group">
+          <div class="filter-label">
+            <span>SORT DATA MATRIX BY:</span>
+          </div>
+          <select id="cyber-sort-select" class="cyber-select">
+            <option value="rating-desc">★ Highest Cyber-Rating</option>
+            <option value="resonance-desc">🧬 Top AI Resonance</option>
+            <option value="year-desc">⏳ Newest Release Era</option>
+            <option value="year-asc">⌛ Oldest Archive Era</option>
+            <option value="title-asc">🔤 Title (A - Z)</option>
+          </select>
+        </div>
+
+        <!-- View Mode & Favorites Filter -->
+        <div class="filter-group">
+          <div class="filter-label">
+            <span>DISPLAY & MEMORY FILTER:</span>
+          </div>
+          <div class="toggle-switch-group">
+            <button id="btn-toggle-fav-filter" class="cyber-btn cyber-btn-pink" title="Show only favorited movies">
+              <span>FAVORITES ONLY</span>
+              <span>♥</span>
+            </button>
+
+            <button id="btn-view-grid" class="cyber-btn cyber-btn-active" title="Holographic Cards Grid View">
+              <span>GRID</span>
+              <span>⊞</span>
+            </button>
+
+            <button id="btn-view-matrix" class="cyber-btn" title="Cyber Terminal Table View">
+              <span>TERMINAL</span>
+              <span>☰</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. ACTION TOOLBAR -->
+    <div class="action-toolbar">
+      <div class="action-buttons-left">
+        <button id="btn-open-recommender" class="cyber-btn" style="background: rgba(0, 240, 255, 0.2); border-color: var(--neon-cyan);">
+          <span>🤖 AI NEURAL RECOMMENDER</span>
+        </button>
+
+        <button id="btn-random-pick" class="cyber-btn">
+          <span>🎲 SURPRISE ME</span>
+        </button>
+
+        <button id="btn-add-movie" class="cyber-btn" style="background: rgba(99, 102, 241, 0.2);">
+          <span>➕ INJECT CYBER-MOVIE</span>
+        </button>
+      </div>
+
+      <div class="action-buttons-right">
+        <div id="results-count-badge" class="results-telemetry-badge">
+          [ 24 DATA-STREAMS INDEXED ]
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. MAIN CONTENT AREA -->
+    <main id="main-content-deck">
+      <!-- Holographic Card Grid Deck -->
+      <div id="movies-grid-deck" class="movies-grid-deck">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Cyber Terminal Matrix View (Table Mode) -->
+      <div id="terminal-matrix-view" class="terminal-matrix-view" style="display: none;">
+        <table class="terminal-table">
+          <thead>
+            <tr>
+              <th>STREAM / SYMBOL</th>
+              <th>GENRE TAGS</th>
+              <th>RATING</th>
+              <th>RESONANCE</th>
+              <th>YEAR</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="terminal-table-body">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State (No Data Nodes Found) -->
+      <div id="empty-deck-state" class="empty-deck-state" style="display: none;">
+        <div class="empty-symbol stream-flicker">⚠️</div>
+        <h3 class="empty-title text-cyan">NO DATA-STREAMS FOUND</h3>
+        <p class="empty-desc">
+          Zero neural nodes matched your current query or filter parameters. Try resetting your search or lowering the minimum cyber-rating.
+        </p>
+        <button class="cyber-btn" onclick="document.getElementById('cyber-search-input').value=''; app.state.searchQuery=''; app.state.activeGenre='All'; app.state.minRating=0; document.getElementById('cyber-rating-slider').value=0; document.getElementById('rating-slider-value').textContent='0.0+'; app.state.favoritesOnly=false; document.getElementById('btn-toggle-fav-filter').classList.remove('cyber-btn-active'); app.renderGenreChips(); app.render();">
+          <span>RESET ALL FILTERS</span>
+          <span>↺</span>
+        </button>
+      </div>
+    </main>
+
+  </div><!-- End .cyber-app-wrapper -->
+
+  <!-- ==========================================================================
+       MODAL 1: DEEP MOVIE HUD INSPECTION MODAL
+       ========================================================================== -->
+  <div id="modal-movie-detail" class="cyber-modal-backdrop">
+    <div class="cyber-modal-window modal-animate-enter">
+      <!-- Modal Header -->
+      <div class="modal-header-hud">
+        <div class="modal-title-wrap">
+          <span class="mono-tag text-cyan">⟨HUD-INSPECTION⟩</span>
+          <span id="detail-classification" class="modal-hud-tag">[ AI-SOUL-01 ]</span>
+        </div>
+        <button id="detail-modal-close" class="modal-close-btn" title="Dismiss HUD">✖</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body-content">
+        <div class="detail-modal-layout">
+          <!-- Left Column: Large Holographic Vector Poster & Audio -->
+          <div class="detail-left-col">
+            <div id="detail-poster-stage" class="detail-poster-stage">
+              <!-- Procedural SVG Poster rendered dynamically -->
+            </div>
+
+            <button id="btn-play-quote-audio" class="cyber-btn" style="width: 100%; justify-content: center;">
+              <span>🔊 TRANSMIT AUDIO LOG</span>
+            </button>
+
+            <button id="btn-detail-fav-toggle" class="cyber-btn" style="width: 100%; justify-content: center;">
+              <span>SYNC TO MEMORY</span>
+              <span>♡</span>
+            </button>
+          </div>
+
+          <!-- Right Column: Specs, Synopsis, Tabs -->
+          <div class="detail-right-col">
+            <div>
+              <h2 id="detail-title" class="detail-movie-title text-cyan">Movie Title</h2>
+              <p id="detail-tagline" class="detail-tagline">Tagline goes here</p>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;" class="mono-tag">
+              <span class="text-cyan" id="detail-rating">★ 9.2</span>
+              <span class="text-dim">|</span>
+              <span id="detail-year" class="text-dim">2017</span>
+              <span class="text-dim">|</span>
+              <span id="detail-duration" class="text-blue">164 min</span>
+            </div>
+
+            <div id="detail-genres" class="card-genres">
+              <!-- Genre pills -->
+            </div>
+
+            <!-- Modal Nav Tabs -->
+            <div class="modal-tabs-nav">
+              <button class="modal-tab-btn active" data-tab="overview">OVERVIEW</button>
+              <button class="modal-tab-btn" data-tab="metrics">CYBER-METRICS</button>
+              <button class="modal-tab-btn" data-tab="specs">TECH SPECS</button>
+              <button class="modal-tab-btn" data-tab="cast">CAST & AI CREW</button>
+            </div>
+
+            <!-- Tab Panes -->
+            <div id="tab-pane-overview" class="tab-pane">
+              <p id="detail-synopsis" style="line-height: 1.6; color: #cbd5e1; margin-bottom: 1.2rem;">
+                Synopsis text...
+              </p>
+
+              <!-- Quote Box -->
+              <div class="quote-terminal-box">
+                <div class="mono-tag text-cyan" style="font-size: 0.75rem; margin-bottom: 0.4rem;">
+                  // DECODED TRANSMISSION QUOTE:
+                </div>
+                <p id="detail-quote-text" class="quote-text-content">
+                  "I have memories, but they are not real..."
+                </p>
+              </div>
+            </div>
+
+            <div id="tab-pane-metrics" class="tab-pane" style="display: none;">
+              <div id="detail-metrics-wrap">
+                <!-- Metrics progress bars -->
+              </div>
+            </div>
+
+            <div id="tab-pane-specs" class="tab-pane" style="display: none;">
+              <div id="detail-tech-specs-wrap">
+                <!-- Tech specs cards -->
+              </div>
+            </div>
+
+            <div id="tab-pane-cast" class="tab-pane" style="display: none;">
+              <div id="detail-cast-grid" class="cast-avatar-grid">
+                <!-- Cast avatar cards -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: AI NEURAL RECOMMENDER & VIBE MATCHER
+       ========================================================================== -->
+  <div id="modal-ai-recommender" class="cyber-modal-backdrop">
+    <div class="cyber-modal-window modal-animate-enter" style="max-width: 840px;">
+      <div class="modal-header-hud">
+        <div class="modal-title-wrap">
+          <span class="mono-tag text-cyan">⟨AI-NEURAL-SUGGEST⟩</span>
+          <span class="modal-hud-tag">[ VIBE MATRIX ENCODER ]</span>
+        </div>
+        <button id="recommender-modal-close" class="modal-close-btn">✖</button>
+      </div>
+
+      <div class="modal-body-content">
+        <p style="color: #94a3b8; margin-bottom: 1.2rem; font-size: 0.95rem;">
+          Select a pre-tuned atmospheric neural vibe or input a custom sensory prompt to discover compatible movies in the archive:
+        </p>
+
+        <!-- Preset Vibe Cards Grid -->
+        <div id="vibe-selection-grid" class="vibe-selection-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Custom Prompt Input -->
+        <div class="search-container" style="margin-bottom: 1rem;">
+          <input 
+            type="text" 
+            id="recommender-custom-query" 
+            class="cyber-search-input" 
+            placeholder="OR TYPE CUSTOM VIBE (e.g. 'philosophical cyborgs in dystopian rain')..."
+          >
+          <button id="btn-run-recommender" class="cyber-btn" style="position: absolute; right: 6px;">
+            <span>SCAN VIBE</span>
+            <span>⚡</span>
+          </button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="recommender-results-wrap" style="display: none;">
+          <div id="recommender-decoding-state" style="text-align: center; padding: 1.5rem 0;">
+            <div class="stream-flicker mono-tag text-cyan" id="decoding-status-text">
+              SYNTHESIZING NEURAL VIBE MATRIX...
+            </div>
+          </div>
+
+          <div id="recommender-matches-list" style="display: grid; gap: 0.8rem; margin-top: 1rem;">
+            <!-- Recommended movie results -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: INJECT CUSTOM CYBER-MOVIE
+       ========================================================================== -->
+  <div id="modal-add-movie" class="cyber-modal-backdrop">
+    <div class="cyber-modal-window modal-animate-enter" style="max-width: 780px;">
+      <div class="modal-header-hud">
+        <div class="modal-title-wrap">
+          <span class="mono-tag text-cyan">⟨INJECT-STREAM⟩</span>
+          <span class="modal-hud-tag">[ CREATE CUSTOM DATA NODE ]</span>
+        </div>
+        <button id="add-movie-modal-close" class="modal-close-btn">✖</button>
+      </div>
+
+      <div class="modal-body-content">
+        <form id="add-movie-form" class="cyber-form-grid">
+          <div class="form-group">
+            <label class="form-label" for="custom-title">MOVIE TITLE *</label>
+            <input type="text" id="custom-title" class="form-input" placeholder="e.g. Neuromatrix 2099" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-year">RELEASE YEAR</label>
+            <input type="number" id="custom-year" class="form-input" placeholder="2026" value="2026">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-duration">DURATION</label>
+            <input type="text" id="custom-duration" class="form-input" placeholder="130 min" value="125 min">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-rating">CYBER-RATING (0.0 - 10.0)</label>
+            <input type="number" id="custom-rating" class="form-input" min="1" max="10" step="0.1" value="9.0">
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label" for="custom-genres">GENRE TAGS (Comma separated)</label>
+            <input type="text" id="custom-genres" class="form-input" placeholder="Cyberpunk, AI & Androids, Action" value="Cyberpunk, AI & Androids">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-glyph-select">PROCEDURAL VECTOR SYMBOL *</label>
+            <select id="custom-glyph-select" class="form-input cyber-select">
+              <!-- Glyph options filled dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group" style="align-items: center; justify-content: center;">
+            <label class="form-label">VECTOR PREVIEW</label>
+            <div id="custom-glyph-preview" style="display: flex; align-items: center; justify-content: center;">
+              <!-- Mini SVG preview -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-director">DIRECTOR / AI ENTITY</label>
+            <input type="text" id="custom-director" class="form-input" placeholder="e.g. Master Control Unit">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="custom-cast">KEY CAST (Comma separated)</label>
+            <input type="text" id="custom-cast" class="form-input" placeholder="e.g. Actor A, Actor B">
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label" for="custom-synopsis">SYNOPSIS *</label>
+            <textarea id="custom-synopsis" class="form-textarea" rows="3" placeholder="Describe the cyberpunk plot..." required></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label" for="custom-quote">MEMORABLE TRANSMISSION QUOTE</label>
+            <input type="text" id="custom-quote" class="form-input" placeholder="e.g. 'The system is awake.'">
+          </div>
+
+          <div class="form-group full-width" style="margin-top: 0.5rem;">
+            <button type="submit" class="cyber-btn" style="width: 100%; justify-content: center; background: var(--neon-cyan); color: #030712; font-size: 0.95rem;">
+              <span>INJECT INTO NEURAL ARCHIVE</span>
+              <span>🚀</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Overlay -->
+  <div id="cyber-toast" class="cyber-toast">
+    <div id="toast-message">Notification message</div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/movies-data.js"></script>
+  <script src="js/glyph-renderer.js"></script>
+  <script src="js/audio-synth.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/recommender.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
